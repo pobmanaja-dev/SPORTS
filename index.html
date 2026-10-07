@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>คลินิกทันตกรรมยิ้มสดใส – นัดหมอฟันออนไลน์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#" data-go="home">ยิ้มสดใส <small>คลินิกทันตกรรม</small></a>
+  <nav id="nav"></nav>
+</header>
+
+<main>
+  <!-- หน้าแรก -->
+  <section id="home" class="page">
+    <div class="hero">
+      <h1>นัดหมอฟัน<br>ง่ายใน 4 ขั้นตอน</h1>
+      <p>เลือกการรักษา เลือกวันเวลา แล้วชำระเงินได้ในที่เดียว</p>
+      <button class="btn" data-go="book">จองคิวเลย</button>
+    </div>
+  </section>
+
+  <!-- สมัคร / เข้าสู่ระบบ -->
+  <section id="auth" class="page card narrow">
+    <div class="tabs">
+      <button class="tab on" data-tab="login">เข้าสู่ระบบ</button>
+      <button class="tab" data-tab="register">สมัครสมาชิก</button>
+    </div>
+    <form id="loginForm">
+      <label>อีเมล<input type="email" id="lEmail" required></label>
+      <label>รหัสผ่าน<input type="password" id="lPass" required></label>
+      <p class="err" id="lErr"></p>
+      <button class="btn">เข้าสู่ระบบ</button>
+    </form>
+    <form id="regForm" hidden>
+      <label>อีเมล<input type="email" id="rEmail" required></label>
+      <label>รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)<input type="password" id="rPass" minlength="6" required></label>
+      <label>ยืนยันรหัสผ่าน<input type="password" id="rPass2" required></label>
+      <p class="err" id="rErr"></p>
+      <button class="btn">สมัครสมาชิก</button>
+    </form>
+  </section>
+
+  <!-- ประวัติส่วนตัว -->
+  <section id="profile" class="page card narrow">
+    <h2>ประวัติส่วนตัว</h2>
+    <form id="profileForm">
+      <div class="row">
+        <label>ชื่อ<input id="pFirst" required></label>
+        <label>นามสกุล<input id="pLast" required></label>
+      </div>
+      <div class="row">
+        <label>วันเกิด<input type="date" id="pBirth" required></label>
+        <label>เบอร์โทร<input type="tel" id="pPhone" pattern="[0-9]{9,10}" placeholder="0812345678" required></label>
+      </div>
+      <label>ประวัติแพ้ยา / โรคประจำตัว<textarea id="pAllergy" rows="3" placeholder="ถ้าไม่มี ให้ใส่ว่า ไม่มี"></textarea></label>
+      <button class="btn">บันทึกข้อมูล</button>
+      <p class="ok" id="pOk"></p>
+    </form>
+  </section>
+
+  <!-- จองคิว -->
+  <section id="book" class="page card">
+    <ol class="steps" id="steps">
+      <li>เลือกการรักษา</li><li>เลือกวันเวลา</li><li>ตรวจสอบและชำระเงิน</li>
+    </ol>
+
+    <div class="step" id="step1">
+      <h2>เลือกรายการทำฟัน</h2>
+      <div class="grid" id="treatments"></div>
+      <button class="btn" id="to2">ถัดไป</button>
+    </div>
+
+    <div class="step" id="step2" hidden>
+      <h2>เลือกวันและเวลา</h2>
+      <label>วันที่นัด<input type="date" id="bDate"></label>
+      <div class="slots" id="slots"></div>
+      <div class="actions"><button class="btn ghost" data-back="1">ย้อนกลับ</button><button class="btn" id="to3">ถัดไป</button></div>
+    </div>
+
+    <div class="step" id="step3" hidden>
+      <h2>ตรวจสอบและชำระเงิน</h2>
+      <div class="summary" id="summary"></div>
+      <div class="pay">
+        <label><input type="radio" name="pay" value="qr" checked> สแกน QR พร้อมเพย์</label>
+        <label><input type="radio" name="pay" value="clinic"> จ่ายที่คลินิก</label>
+      </div>
+      <div id="payQr" class="payBox"><div id="qrBox"></div><img class="qr" id="qrFallback" src="qr.jpg" alt="QR พร้อมเพย์สำหรับชำระเงิน" hidden><p>สแกนโอนยอด <b id="qrAmt"></b> (ระบบล็อกยอดให้แล้ว) จากนั้นกดยืนยันการจอง ทางคลินิกจะตรวจสอบยอดโอนให้</p></div>
+      <p class="err" id="payErr"></p>
+      <div class="actions"><button class="btn ghost" data-back="2">ย้อนกลับ</button><button class="btn" id="confirm">ยืนยันการจอง</button></div>
+    </div>
+  </section>
+
+  <!-- นัดหมายของฉัน -->
+  <section id="mine" class="page card">
+    <h2>นัดหมายของฉัน</h2>
+    <div id="myList"></div>
+  </section>
+</main>
+
+<div id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
