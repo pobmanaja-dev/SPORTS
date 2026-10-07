@@ -197,7 +197,7 @@ $('#confirm').onclick = () => {
   });
   if (!confirm('ยืนยันการจองคิวใช่หรือไม่?')) return;
   db.set('appts', appts);
-toast('จองคิวสำเร็จ');
+toast('จองคิวสำเร็จแล้วจ้า');
 go('mine');
 };
 
@@ -211,7 +211,7 @@ function renderMine() {
     : '<p>ยังไม่มีนัดหมาย <a href="#" data-go="book">จองคิวแรกของคุณ</a></p>';
 }
 $('#myList').onclick = e => {
-  const id = e.target.dataset.cancel; if (!id || !confirm('คุณต้องการยกเลิกนัดหมายนี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้')) return;
+  const id = e.target.dataset.cancel; if (!id || !confirm('ยืนยันการยกเลิกนัดจองคิวใช่หรือไม่')) return;
   const appts = db.get('appts', []); appts.find(a => a.id == id).status = 'ยกเลิก';
   db.set('appts', appts); renderMine(); toast('ทำการยกเลิกนัดแล้ว');
 };
