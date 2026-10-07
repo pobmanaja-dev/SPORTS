@@ -68,10 +68,18 @@ $('#regForm').onsubmit = e => {
   db.set('users', users); login(email); toast('สมัครสมาชิกสำเร็จ'); go('profile');
 };
 $('#loginForm').onsubmit = e => {
-  e.preventDefault();
-  const email = $('#lEmail').value.trim().toLowerCase(), u = db.get('users', {})[email];
-  if (!u || u.pass !== hash($('#lPass').value)) return $('#lErr').textContent = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
-  login(email); go(u.profile ? 'book' : 'profile');
+    e.preventDefault();
+    const email = $('#lEmail').value.trim().toLowerCase(),
+          u = db.get('users', {})[email];
+
+    if (!u || u.pass !== hash($('#lPass').value))
+        return $('#lErr').textContent = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+
+    login(email);
+
+    toast('ยินดีต้อนรับเข้าสู่ระบบ');
+
+    go(u.profile ? 'book' : 'profile');
 };
 function login(email) { session = email; db.set('session', email); renderNav(); }
 
@@ -120,9 +128,17 @@ $('#bDate').onchange = e => {
   const taken = db.get('appts', []).filter(a => a.date === sel.date && a.status !== 'ยกเลิก').map(a => a.time);
   const nowHM = new Date().toTimeString().slice(0, 5), isToday = sel.date === new Date().toISOString().slice(0, 10);
   $('#slots').innerHTML = TIMES.map(t => {
-    const off = taken.includes(t) || (isToday && t <= nowHM);
-    return `<button type="button" class="slot" data-t="${t}" ${off ? 'disabled' : ''}>${t}</button>`;
-  }).join('');
+    const bookedFull = (sel.date === '2026-10-24' && t === '14:00');
+
+    const off =
+        taken.includes(t) ||
+        (isToday && t <= nowHM) ||
+        bookedFull;
+
+    return `<button type="button" class="slot" data-t="${t}" ${off ? 'disabled' : ''}>
+        ${bookedFull ? '14:00 (เต็ม)' : t}
+    </button>`;
+}).join('');
 };
 $('#slots').onclick = e => {
   const b = e.target.closest('.slot'); if (!b || b.disabled) return;
@@ -179,7 +195,10 @@ $('#confirm').onclick = () => {
     id: Date.now(), email: session, treatment: sel.treatment.name, price: sel.treatment.price,
     date: sel.date, time: sel.time, method, status: method === 'qr' ? 'รอตรวจสอบยอดโอน' : 'รอชำระที่คลินิก'
   });
-  db.set('appts', appts); toast('จองคิวสำเร็จ'); go('mine');
+  if (!confirm('ยืนยันการจองคิวใช่หรือไม่?')) return;
+  db.set('appts', appts);
+toast('จองคิวสำเร็จ');
+go('mine');
 };
 
 /* ===== นัดหมายของฉัน ===== */
@@ -192,9 +211,9 @@ function renderMine() {
     : '<p>ยังไม่มีนัดหมาย <a href="#" data-go="book">จองคิวแรกของคุณ</a></p>';
 }
 $('#myList').onclick = e => {
-  const id = e.target.dataset.cancel; if (!id || !confirm('ต้องการยกเลิกนัดนี้ใช่ไหม')) return;
+  const id = e.target.dataset.cancel; if (!id || !confirm('คุณต้องการยกเลิกนัดหมายนี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้')) return;
   const appts = db.get('appts', []); appts.find(a => a.id == id).status = 'ยกเลิก';
-  db.set('appts', appts); renderMine(); toast('ยกเลิกนัดแล้ว');
+  db.set('appts', appts); renderMine(); toast('ทำการยกเลิกนัดแล้ว');
 };
 
 /* ===== เริ่มต้น ===== */
